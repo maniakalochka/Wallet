@@ -23,6 +23,9 @@ class Settings(BaseSettings):
         f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
+    ECHO: bool = True
+    EXPIRE_ON_COMMIT: bool = False
+
     # --- Other Settings ---
     DEBUG: bool = True
     IS_TESTING: bool = True
