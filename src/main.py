@@ -1,7 +1,10 @@
 from fastapi import FastAPI
+from core.config import settings
 
 
-app = FastAPI()
+app = FastAPI(
+    title=settings.APP_NAME,
+)
 
 @app.get("/")
 async def welcome() -> dict:
