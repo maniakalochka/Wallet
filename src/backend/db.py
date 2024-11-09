@@ -13,8 +13,9 @@ engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
 
 # Session Factory
 async_session = sessionmaker(
-    engine, 
+    bind=engine, 
     class_=AsyncSession, 
+    autoflush=True,
     expire_on_commit=EXPIRE_ON_COMMIT
 )
 
