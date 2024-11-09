@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+from typing import ClassVar
 import os
 
 from pathlib import Path
@@ -14,14 +15,12 @@ class Settings(BaseSettings):
     APP_NAME: str = "Wallet"
 
     # --- Database Settings ---
-    DB_USER: str = os.getenv("DB_USER")
-    DB_PASSWORD: str = os.getenv("DB_PASS")
-    DB_HOST: str = os.getenv("DB_HOST")
-    DB_PORT: str = os.getenv("DB_PORT")
-    DB_NAME: str = os.getenv("DB_NAME")
-    DB_URL = (
-        f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    )
+    DB_USER: str 
+    DB_PASS: str 
+    DB_HOST: str 
+    DB_PORT: str 
+    DB_NAME: str 
+    DB_URL: ClassVar[str]
 
     ECHO: bool = True
     EXPIRE_ON_COMMIT: bool = False
@@ -32,6 +31,9 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
-
+ 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Settings.DB_URL = f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
 settings = Settings()
