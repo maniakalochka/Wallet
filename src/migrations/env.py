@@ -3,15 +3,14 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from alembic import context
-from src.models import user, wallet, transaction
+from models import user, wallet, transaction
 
-from src.backend.db import Base
+from backend.db import Base
 import sys
 import os
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
-)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+# Настройка логирования
 config = context.config
 fileConfig(config.config_file_name)
 
