@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     EXPIRE_ON_COMMIT: bool = False
 
     # --- Auth Settings ---
-    SECRET_KEY: str
+    SECRET_TOKEN: str
 
     # --- Other Settings ---
     DEBUG: bool = True
