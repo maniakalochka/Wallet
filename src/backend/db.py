@@ -13,13 +13,11 @@ engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
 
 # Session Factory
 async_session = sessionmaker(
-    bind=engine, 
-    class_=AsyncSession, 
-    autoflush=True,
-    expire_on_commit=EXPIRE_ON_COMMIT
+    bind=engine, class_=AsyncSession, autoflush=True, expire_on_commit=EXPIRE_ON_COMMIT
 )
 
 Base = declarative_base()  # Base class for ORM models
+
 
 async def get_db():
     """Create async session"""
@@ -31,7 +29,8 @@ async def get_db():
             raise
         finally:
             await session.close()
-    
+
+
 async def init_db():
     """Init database tables"""
     async with engine.begin() as conn:

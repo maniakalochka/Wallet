@@ -15,11 +15,11 @@ class Settings(BaseSettings):
     APP_NAME: str = "Wallet"
 
     # --- Database Settings ---
-    DB_USER: str 
-    DB_PASS: str 
-    DB_HOST: str 
-    DB_PORT: str 
-    DB_NAME: str 
+    DB_USER: str
+    DB_PASS: str
+    DB_HOST: str
+    DB_PORT: str
+    DB_NAME: str
     DB_URL: ClassVar[str]
 
     ECHO: bool = True
@@ -31,9 +31,10 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = str(env_path)
- 
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Settings.DB_URL = f"postgresql+asyncpg:///{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+
 
 settings = Settings()
