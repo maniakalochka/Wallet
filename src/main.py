@@ -1,11 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from core.config import settings
+from routers import auth
+
 
 
 app = FastAPI(
     title=settings.APP_NAME,
 )
 
+
+
+app.include_router(auth.router, prefix="/auth")  
 
 @app.get("/")
 async def welcome() -> dict:
