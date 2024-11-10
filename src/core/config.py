@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     ECHO: bool = True
     EXPIRE_ON_COMMIT: bool = False
 
+    # --- Auth Settings ---
+    SECRET_KEY: str
+
     # --- Other Settings ---
     DEBUG: bool = True
     IS_TESTING: bool = True
