@@ -1,4 +1,4 @@
-from src.backend.db import Base
+from backend.db import Base
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
@@ -12,9 +12,11 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
+    usename = Column(String, unique=True)
     email = Column(String, unique=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
     wallet = relationship("Wallet", back_populates="user")
 
     def __repr__(self):
