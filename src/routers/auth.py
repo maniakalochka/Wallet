@@ -16,7 +16,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from core.config import settings
 
 from datetime import datetime, timedelta
-from jose import jwt
+from jose import jwt, JWTError
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
@@ -50,10 +50,6 @@ async def authanticate_user(db: Annotated[AsyncSession, Depends(get_db)], userna
         )
     return user
 
-@router.get("/read_current_user")
-async def read_current_user(user: User = Depends(oauth2_scheme)):
-    return user
-
 async def create_access_token(username: str, user_id: int, is_admin: bool, expires_delta: timedelta):
     encode = {'sub': username, 'id': user_id, 'is_admin': is_admin}
     expires = datetime.now() + expires_delta
@@ -70,7 +66,49 @@ async def login(db: Annotated[AsyncSession, Depends(get_db)], form_data: Annotat
             detail='Could not validate user'
         )
 
+    token = await create_access_token(user.username, user.id, user.is_admin, timedelta(minutes=20))
+
     return {
         'access_token': user.username,
         'token_type': 'bearer'
     }
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    try:
+        payload = jwt.decode(token, SECRET_TOKEN, algorithms=[ALGORITHM])
+        username: str = payload.get('sub')
+        user_id: int = payload.get('id')
+        is_admin: str = payload.get('is_admin')
+        expire = payload.get('exp')
+        if username is None or user_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Could not validate user'
+            )
+        if expire is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No access token supplied"
+            )
+        if datetime.now() > datetime.fromtimestamp(expire):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Token expired!"
+            )
+
+        return {
+            'username': username,
+            'id': user_id,
+            'is_admin': is_admin,
+        }
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Could not validate user'
+        )
+
+@router.get("/read_current_user")
+async def read_current_user(user: User = Depends(oauth2_scheme)):
+    return user
+
+
