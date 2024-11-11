@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import enum
+from models.wallet import Wallet
 
 
 class User(Base):
