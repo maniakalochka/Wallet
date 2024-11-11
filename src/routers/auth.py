@@ -5,7 +5,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
 from schemas.user import UserCreate
-from backend.db import get_db
+from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 

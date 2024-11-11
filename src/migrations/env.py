@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from alembic import context
 from models import user, wallet, transaction
 
-from backend.db import Base
+from database.db import Base
 import sys
 import os
 

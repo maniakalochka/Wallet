@@ -1,4 +1,4 @@
-from backend.db import Base
+from database.db import Base
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
