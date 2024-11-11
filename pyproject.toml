@@ -12,7 +12,7 @@ pydantic = {extras = ["email"], version = "^2.9.2"}
 pytest = "^8.3.3"
 alembic = "^1.14.0"
 pytest-asyncio = "^0.24.0"
-SQLAlchemy = "^2.0.36"
+SQLAlchemy = {extras = ["asyncio"], version = "^2.0.36"}
 slugify = "^0.0.1"
 uvicorn = "^0.32.0"
 black = "^24.10.0"
