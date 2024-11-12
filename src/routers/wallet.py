@@ -16,6 +16,6 @@ async def add_wallet(
     wallet_dict = wallet.model_dump()
     wallet_id = await WalletRepo().add_one(wallet_dict)
     return {
-        "wallet_id": wallet_id
+        "wallet_id": wallet_id  # /TODO add succes status
     }
     
