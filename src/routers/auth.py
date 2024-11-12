@@ -39,7 +39,6 @@ async def create_user(db: Annotated[AsyncSession, Depends(get_db)], create_user:
                                          username=create_user.username,
                                          email=create_user.email,
                                          hashed_password=bcrypt_context.hash(create_user.password),
-                                         is_active=True
                                          ))
     await db.commit()
     return {
