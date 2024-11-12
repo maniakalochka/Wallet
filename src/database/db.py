@@ -1,8 +1,8 @@
 import os
 from core.config import settings
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine, async_sessionmaker
+# from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 DATABASE_URL = settings.DB_URL
@@ -12,7 +12,7 @@ EXPIRE_ON_COMMIT = settings.EXPIRE_ON_COMMIT
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
 
 # Session Factory
-async_session = sessionmaker(
+async_session = async_sessionmaker(
     bind=engine, class_=AsyncSession, autoflush=True, expire_on_commit=EXPIRE_ON_COMMIT
 )
 
