@@ -9,6 +9,9 @@ class TransactionBase(BaseModel):
     )
     type: str = Field("INCOME", example="INCOME", title="Type")
 
+    class Config:
+        from_attributes = True
+
 
 class TransactionCreate(TransactionBase):
     pass

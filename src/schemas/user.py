@@ -10,6 +10,9 @@ class UserBase(BaseModel):
     password: str = Field(..., example="password", title="Password")
     is_admin: bool = Field(False, example=False, title="Admin")
 
+    class Config:
+        from_attributes = True
+
 class UserCreate(UserBase):
     pass
 

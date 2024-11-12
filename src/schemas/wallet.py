@@ -6,6 +6,8 @@ class WalletBase(BaseModel):
     balance: float = Field(0.0, example=100.0, title="Balance")
     # currency: str = Field('RUB', example='RUB', title='Currency')
 
+    class Config:
+        from_attributes = True
 
 class WalletCreate(WalletBase):
     pass
