@@ -24,6 +24,8 @@ class User(Base):
         return f"<User {self.last_name}>"
 
 @event.listens_for(User, 'after_insert')
-def create_wallet_after_user_insert(mapper, connection, target):
-    with async_session() as session:
-        connection.execute(Wallet.__table__.insert().values(user_id=target.id, balance=0.0))
+async def create_wallet_after_user_insert(mapper, connection, target):
+    async with async_session() as session:
+        async with session.begin():
+            new_wallet = Wallet(user_id=target.id)
+            session.add(new_wallet)
