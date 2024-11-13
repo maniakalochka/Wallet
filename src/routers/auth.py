@@ -4,7 +4,7 @@ from sqlalchemy import select, insert
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
-from schemas.user import UserCreate
+from schemas.user import UserCreate, SuperUserCreate
 from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -39,6 +39,27 @@ async def create_user(db: Annotated[AsyncSession, Depends(get_db)], create_user:
                                          username=create_user.username,
                                          email=create_user.email,
                                          hashed_password=bcrypt_context.hash(create_user.password),
+                                         ))
+    await db.commit()
+    return {
+        'status_code': status.HTTP_201_CREATED,
+        'transaction': 'Successful'
+    }
+
+@router.post('/superuser')
+async def create_superuser(superuser: SuperUserCreate, db: Annotated[AsyncSession, Depends(get_db)]):
+    existing_user = await db.scalar(select(User).where((User.username == superuser.username) | (User.email == superuser.email)))
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='User or email already exists'
+        )
+    await db.execute(insert(User).values(first_name=superuser.first_name,
+                                         last_name=superuser.last_name,
+                                         username=superuser.username,
+                                         email=superuser.email,
+                                         hashed_password=bcrypt_context.hash(superuser.password),
+                                         is_admin=superuser.is_admin
                                          ))
     await db.commit()
     return {

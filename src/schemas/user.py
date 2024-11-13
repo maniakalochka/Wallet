@@ -8,7 +8,6 @@ class UserBase(BaseModel):
     username: str = Field(..., example="RobertSmith", title="Username")
     email: EmailStr = Field(..., example="email@example.com", title="Email")
     password: str = Field(..., example="password", title="Password")
-    is_admin: bool = Field(False, example=False, title="Admin")
 
     class Config:
         from_attributes = True
@@ -20,3 +19,6 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     email: Optional[EmailStr] = Field(..., example="email@example.com", title="Email")
     password: Optional[str] = Field(..., example="qwerty", title="Password")
+
+class SuperUserCreate(UserBase):
+    is_admin: bool = Field(..., example=True, title="Is Admin")
