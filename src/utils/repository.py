@@ -28,7 +28,6 @@ class SQLAlchemyRepository(AbstractRepository):
     async def find_all(self):
         async with async_session() as session:
             stmt = select(self.model)
-            res = await session.execute(stmt) #  удалить строку
-            res = [row[0].to_read_model() for row in res.all()]
+            result = await session.execute(stmt)
+            res = [row[0] for row in result.fetchall()]
             return res
-            
