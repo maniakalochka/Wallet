@@ -84,39 +84,52 @@ async def login(db: Annotated[AsyncSession, Depends(get_db)], form_data: Annotat
         'token_type': 'bearer'
     }
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+# async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+#     try:
+#         payload = jwt.decode(token, SECRET_TOKEN, algorithms=[ALGORITHM])
+#         username: str = payload.get('sub')
+#         user_id: int = payload.get('id')
+#         is_admin: str = payload.get('is_admin')
+#         expire = payload.get('exp')
+#         if username is None or user_id is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail='Could not validate user'
+#             )
+#         if expire is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail="No access token supplied"
+#             )
+#         if datetime.now() > datetime.fromtimestamp(expire):
+#             raise HTTPException(
+#                 status_code=status.HTTP_403_FORBIDDEN,
+#                 detail="Token expired!"
+#             )
+
+#         return {
+#             'username': username,
+#             'id': user_id,
+#             'is_admin': is_admin,
+#         }
+#     except JWTError:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail='Could not validate user'
+#         )
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[AsyncSession, Depends(get_db)]):
     try:
         payload = jwt.decode(token, SECRET_TOKEN, algorithms=[ALGORITHM])
-        username: str = payload.get('sub')
-        user_id: int = payload.get('id')
-        is_admin: str = payload.get('is_admin')
-        expire = payload.get('exp')
-        if username is None or user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail='Could not validate user'
-            )
-        if expire is None:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="No access token supplied"
-            )
-        if datetime.now() > datetime.fromtimestamp(expire):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Token expired!"
-            )
-
-        return {
-            'username': username,
-            'id': user_id,
-            'is_admin': is_admin,
-        }
+        user_id: int = payload.get("id")
+        if user_id is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
+        user = await db.get(User, user_id)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
+        return user
     except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Could not validate user'
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user")
 
 @router.get("/read_current_user")
 async def read_current_user(user: User = Depends(oauth2_scheme)):
