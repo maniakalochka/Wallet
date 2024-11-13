@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter
 from core.config import settings
-from routers import auth, wallet
+from routers import auth, wallet, transaction
 
 
 
@@ -12,6 +12,7 @@ app = FastAPI(
 
 app.include_router(auth.router, tags=["auth"])
 app.include_router(wallet.router, tags=['wallet'])
+app.include_router(transaction.router, tags=['transaction'])
 
 @app.get("/")
 async def welcome() -> dict:
