@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.wallet import WalletCreate
+from schemas.wallet import WalletCreate, WalletUpdate
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
@@ -18,4 +18,22 @@ async def add_wallet(
     return {
         "wallet_id": wallet_id  # /TODO add succes status
     }
+@router.get('/all')
+async def get_wallets():
+    wallets = await WalletRepo().find_all()
+    return wallets
+
+@router.get('/{id}')
+async def get_wallet_by_id(id: int):
+    wallet = await WalletRepo().find_by_id(id)
+    if wallet is None:
+        raise HTTPException(status_code=404, detail="Wallet not found")
+    return wallet
     
+@router.put('/{id}')
+async def update_wallet(id: int, wallet: WalletUpdate):
+    pass
+
+@router.delete('/{id}')
+async def delete_wallet(id: int):
+    pass

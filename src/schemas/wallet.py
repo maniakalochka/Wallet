@@ -14,5 +14,5 @@ class WalletCreate(WalletBase):
     pass
 
 
-class WalletUpdate(WalletBase):
-    pass
+class WalletUpdate(BaseModel):
+    currency: str = Field('RUB', example='RUB', title='Currency')
