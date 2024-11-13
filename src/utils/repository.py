@@ -28,6 +28,13 @@ class SQLAlchemyRepository(AbstractRepository):
     async def find_all(self):
         async with async_session() as session:
             stmt = select(self.model)
-            res = [row[0].to_read_model() for row in res.all()]
+            result = await session.execute(stmt)
+            res = [row[0] for row in result.fetchall()]
             return res
             
+    async def find_by_id(self, id: int): 
+        async with async_session() as session:
+            stmt = select(self.model).where(self.model.id == id)
+            result = await session.execute(stmt)
+            res = result.scalars().first()
+            return res
