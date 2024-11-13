@@ -18,6 +18,8 @@ class Wallet(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User", back_populates="wallet")
     balance = Column(Float, default=0.0)
+    sent_transactions = relationship("Transaction", foreign_keys="[Transaction.sender_wallet_id]", back_populates="sender_wallet")
+    received_transactions = relationship("Transaction", foreign_keys="[Transaction.receiver_wallet_id]", back_populates="receiver_wallet")
 
     def __repr__(self):
         return f"<Wallet {self.id}>"
