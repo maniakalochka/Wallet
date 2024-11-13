@@ -1,5 +1,5 @@
-from database.db import Base
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean
+from database.db import Base, async_session
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, event
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -22,3 +22,8 @@ class User(Base):
 
     def __repr__(self):
         return f"<User {self.last_name}>"
+
+@event.listens_for(User, 'after_insert')
+def create_wallet_after_user_insert(mapper, connection, target):
+    with async_session() as session:
+        connection.execute(Wallet.__table__.insert().values(user_id=target.id, balance=0.0))
