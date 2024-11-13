@@ -30,6 +30,8 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = select(self.model)
             result = await session.execute(stmt)
             res = [row[0] for row in result.fetchall()]
+            result = await session.execute(stmt)
+            res = [row[0] for row in result.fetchall()]
             return res
             
     async def find_by_id(self, id: int): 
