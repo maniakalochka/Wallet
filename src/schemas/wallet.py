@@ -16,3 +16,6 @@ class WalletCreate(WalletBase):
 
 class WalletUpdate(BaseModel):
     currency: str = Field('RUB', example='RUB', title='Currency')
+
+    class Config:
+        from_attributes = True
