@@ -10,7 +10,7 @@ app = FastAPI(
 
 
 
-app.include_router(auth.router, tags=["auth"])
+app.include_router(auth.router, tags=["user"])
 app.include_router(wallet.router, tags=['wallet'])
 app.include_router(transaction.router, tags=['transaction'])
 
