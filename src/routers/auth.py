@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy import select, insert
+from sqlalchemy import select, insert, update
 
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
@@ -18,9 +18,11 @@ from core.config import settings
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
+from auth_helper import authenticate_user, create_access_token
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/user", tags=["user"])
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 SECRET_TOKEN = settings.SECRET_TOKEN
@@ -106,52 +108,20 @@ async def read_current_user(user: User = Depends(oauth2_scheme)):
     return user
 
 
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    db: Annotated[AsyncSession, Depends(get_db)],
-):
-    try:
-        payload = jwt.decode(token, SECRET_TOKEN, algorithms=[ALGORITHM])
-        user_id: int = payload.get("id")
-        if user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate user",
-            )
-        user = await db.get(User, user_id)
-        if user is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate user",
-            )
-        return user
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user"
-        )
+@router.delete("/user/{user_id}")
+async def delete_user_by_id(user: User, db: Annotated[AsyncSession, Depends(get_db)]):
+    await db.delete(user)
+    await db.commit()
+    return {"status_code": status.HTTP_200_OK, "transaction": "Successful"}
 
 
-async def authenticate_user(
-    db: Annotated[AsyncSession, Depends(get_db)], username: str, password: str
-):
-    user = await db.scalar(select(User).where(User.username == username))
-    if (
-        not user
-        or not bcrypt_context.verify(password, user.hashed_password)
-        or user.is_active == False
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
+@router.patch("/user/{user_id}")
+async def deactivate_user_by_id(user: User, db: Annotated[AsyncSession, Depends(get_db)]):
+    stmt = update(User).where(User.id == user.id).values(is_active=False)
+    await db.execute(stmt)
+    await db.commit()
+    return {
+        "status_code": status.HTTP_200_OK,
+        "transaction": "User deactivated successfully",
+    }
 
-
-async def create_access_token(
-    username: str, user_id: int, is_admin: bool, expires_delta: timedelta
-):
-    encode = {"sub": username, "id": user_id, "is_admin": is_admin}
-    expires = datetime.now() + expires_delta
-    encode.update({"exp": expires})
-    return jwt.encode(encode, SECRET_TOKEN, algorithm=ALGORITHM)
