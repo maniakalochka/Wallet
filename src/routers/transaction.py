@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
 from repositories.transaction import TransactionRepo
 from models.user import User
-from .auth import get_current_user
+from .auth_helper import get_current_user
 
 
 router = APIRouter(prefix='/transaction', tags=['transaction'])
