@@ -17,8 +17,8 @@ from core.config import settings
 
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+ 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token") 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
