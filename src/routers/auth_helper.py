@@ -1,13 +1,20 @@
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, status, HTTPException
-from auth import oauth2_scheme
 from database.db import get_db
-from auth import bcrypt_context, SECRET_TOKEN, ALGORITHM
 from jose import jwt, JWTError
 from sqlalchemy import select
-from models import User
+from models.user import User
 from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordBearer
+from core.config import settings
+from passlib.context import CryptContext
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
+SECRET_TOKEN = settings.SECRET_TOKEN
+ALGORITHM = "HS256"
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 
 async def get_current_user(

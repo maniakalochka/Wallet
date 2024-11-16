@@ -4,7 +4,7 @@ from sqlalchemy import select, insert, update
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
-from schemas.user import UserCreate, SuperUserCreate
+from schemas.user import UserCreate, SuperUserCreate, UserDeactivate
 from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,69 +18,47 @@ from core.config import settings
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
-from auth_helper import authenticate_user, create_access_token
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+from .auth_helper import authenticate_user, create_access_token, oauth2_scheme, SECRET_TOKEN, ALGORITHM
+from repositories.user import UserRepo
 
 router = APIRouter(prefix="/user", tags=["user"])
-bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-SECRET_TOKEN = settings.SECRET_TOKEN
-ALGORITHM = "HS256"
+bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @router.post("/")
 async def create_user(
-    db: Annotated[AsyncSession, Depends(get_db)], create_user: UserCreate
+    db: Annotated[AsyncSession, Depends(get_db)], 
+    create_user: UserCreate
 ):
-    existing_user = await db.scalar(
-        select(User).where(
-            (User.username == create_user.username) | (User.email == create_user.email)
-        )
-    )
+    user_dict = create_user.model_dump()
+    existing_user = await UserRepo().check_exists(username=create_user.username, email=create_user.email)
+
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User or email already exists",
         )
-    await db.execute(
-        insert(User).values(
-            first_name=create_user.first_name,
-            last_name=create_user.last_name,
-            username=create_user.username,
-            email=create_user.email,
-            hashed_password=bcrypt_context.hash(create_user.password),
-        )
-    )
-    await db.commit()
+
+    await UserRepo().add_one(user_dict)
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
 @router.post("/superuser")
 async def create_superuser(
-    superuser: SuperUserCreate, db: Annotated[AsyncSession, Depends(get_db)]
+    db: Annotated[AsyncSession, Depends(get_db)], 
+    create_superuser: SuperUserCreate
 ):
-    existing_user = await db.scalar(
-        select(User).where(
-            (User.username == superuser.username) | (User.email == superuser.email)
-        )
-    )
+    user_dict = create_superuser.model_dump()
+    existing_user = await UserRepo().check_exists(username=create_superuser.username, email=create_superuser.email)
+
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User or email already exists",
         )
-    await db.execute(
-        insert(User).values(
-            first_name=superuser.first_name,
-            last_name=superuser.last_name,
-            username=superuser.username,
-            email=superuser.email,
-            hashed_password=bcrypt_context.hash(superuser.password),
-            is_admin=superuser.is_admin,
-        )
-    )
-    await db.commit()
+
+    await UserRepo().add_one(user_dict)
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
@@ -108,16 +86,9 @@ async def read_current_user(user: User = Depends(oauth2_scheme)):
     return user
 
 
-@router.delete("/user/{user_id}")
-async def delete_user_by_id(user: User, db: Annotated[AsyncSession, Depends(get_db)]):
-    await db.delete(user)
-    await db.commit()
-    return {"status_code": status.HTTP_200_OK, "transaction": "Successful"}
-
-
-@router.patch("/user/{user_id}")
-async def deactivate_user_by_id(user: User, db: Annotated[AsyncSession, Depends(get_db)]):
-    stmt = update(User).where(User.id == user.id).values(is_active=False)
+@router.patch("/{user_id}")
+async def deactivate_user_by_id(user: UserDeactivate, db: Annotated[AsyncSession, Depends(get_db)]):
+    stmt = update(User).where(User.username == user.username).values(is_active=False)
     await db.execute(stmt)
     await db.commit()
     return {

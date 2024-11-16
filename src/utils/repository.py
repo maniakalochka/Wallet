@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from database.db import async_session
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, or_, update
+from fastapi import status
 
 
 class AbstractRepository(ABC):
@@ -17,6 +18,24 @@ class AbstractRepository(ABC):
 class SQLAlchemyRepository(AbstractRepository):
     model = None
     
+    async def check_exists(self, **kwargs):
+        async with async_session() as session:
+            stmt = select(self.model).where(
+                or_(self.model.username == kwargs['username'],
+                    self.model.email == kwargs['email']))
+            result = await session.execute(stmt)
+            res = result.scalars().first()
+            return res
+
+
+    async def deactivate_user(self, **kwargs):
+        async with async_session() as session:
+            stmt = update(self.model).where(self.model.username == kwargs['username']).values(is_active=False)
+            await session.execute(stmt)
+            await session.commit()
+            return {"status_code": status.HTTP_200_OK, "transaction": "Successful"}
+     
+
     async def add_one(self, data: dict):
         async with async_session() as session:
             stmt = insert(self.model).values(**data).returning(self.model.id)
