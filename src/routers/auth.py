@@ -17,8 +17,8 @@ from core.config import settings
 
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
- 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token") 
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -101,6 +101,11 @@ async def login(
     return {"access_token": token, "token_type": "bearer"}
 
 
+@router.get("/read_current_user")
+async def read_current_user(user: User = Depends(oauth2_scheme)):
+    return user
+
+
 async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -124,11 +129,6 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user"
         )
-
-
-@router.get("/read_current_user")
-async def read_current_user(user: User = Depends(oauth2_scheme)):
-    return user
 
 
 async def authenticate_user(
