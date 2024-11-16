@@ -1,8 +1,11 @@
-import os
 from core.config import settings
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, AsyncEngine, async_sessionmaker
-# from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+    AsyncEngine,
+    async_sessionmaker,
+)
 from sqlalchemy.ext.declarative import declarative_base
 
 DATABASE_URL = settings.DB_URL
