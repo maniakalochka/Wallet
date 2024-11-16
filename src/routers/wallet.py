@@ -18,6 +18,7 @@ async def add_wallet(
     return {
         "wallet_id": wallet_id  # /TODO add succes status
     }
+    
 @router.get('/all')
 async def get_wallets():
     wallets = await WalletRepo().find_all()
