@@ -20,6 +20,10 @@ class UserCreate(UserBase):
 class UserUpdatePassword(BaseModel):
     password: Optional[str] = Field(..., example="qwerty", title="Password")
 
+class UserLogin(BaseModel):
+    username: str = Field(..., example="RobertSmith", title="Username")
+    password: str = Field(..., example="password", title="Password")
+
 
 class UserDeactivate(BaseModel):
     username: str = Field(..., example="RobertSmith", title="Username")

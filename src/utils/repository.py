@@ -59,3 +59,11 @@ class SQLAlchemyRepository(AbstractRepository):
             result = await session.execute(stmt)
             res = result.scalars().first()
             return res
+
+    
+    async def find_by_username(self, username: str, password: str):
+        async with async_session() as session:
+            stmt = select(self.model).where(self.model.username == username)
+            result = await session.execute(stmt)
+            res = result.scalars().first()
+            return res

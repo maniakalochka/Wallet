@@ -4,7 +4,7 @@ from sqlalchemy import select, insert, update
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
-from schemas.user import UserCreate, SuperUserCreate, UserDeactivate
+from schemas.user import UserCreate, SuperUserCreate, UserDeactivate, UserLogin
 from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,7 +18,8 @@ from core.config import settings
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
-from .auth_helper import authenticate_user, create_access_token, oauth2_scheme, SECRET_TOKEN, ALGORITHM
+from .auth_helper import authenticate_user, create_access_token, oauth2_scheme, SECRET_TOKEN, ALGORITHM, hash_password, verify_password
+
 from repositories.user import UserRepo
 
 router = APIRouter(prefix="/user", tags=["user"])
@@ -39,7 +40,7 @@ async def create_user(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User or email already exists",
         )
-
+    user_dict["hashed_password"] = hash_password(user_dict["hashed_password"])
     await UserRepo().add_one(user_dict)
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
@@ -62,8 +63,28 @@ async def create_superuser(
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
+@router.post("/login")
+async def login_user(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user_login: UserLogin
+): 
+    user = await UserRepo().find_by_username(user_login.username, user_login.password) 
+
+    if not user or not verify_password(user_login.password, user.hashed_password):
+       raise HTTPException(
+           status_code=status.HTTP_401_UNAUTHORIZED,
+           detail="Invalid username or password",
+       )
+    
+    return {
+        "status_code": status.HTTP_200_OK,
+        "message": "Login succesful",
+    }
+
+
+
 @router.post("/token")
-async def login(
+async def create_token(
     db: Annotated[AsyncSession, Depends(get_db)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
