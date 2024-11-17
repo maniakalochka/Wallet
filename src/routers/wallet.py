@@ -19,10 +19,12 @@ async def add_wallet(
         "wallet_id": wallet_id  # /TODO add succes status
     }
     
+
 @router.get('/all')
 async def get_wallets():
     wallets = await WalletRepo().find_all()
     return wallets
+
 
 @router.get('/{id}')
 async def get_wallet_by_id(id: int):
@@ -31,9 +33,11 @@ async def get_wallet_by_id(id: int):
         raise HTTPException(status_code=404, detail="Wallet not found")
     return wallet
     
+
 @router.put('/{id}')
 async def update_wallet(id: int, wallet: WalletUpdate):
     pass
+
 
 @router.delete('/{id}')
 async def delete_wallet(id: int):
