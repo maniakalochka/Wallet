@@ -33,12 +33,3 @@ async def get_wallet_by_id(id: int):
         raise HTTPException(status_code=404, detail="Wallet not found")
     return wallet
     
-
-@router.put('/{id}')
-async def update_wallet(id: int, wallet: WalletUpdate):
-    pass
-
-
-@router.delete('/{id}')
-async def delete_wallet(id: int):
-    pass
