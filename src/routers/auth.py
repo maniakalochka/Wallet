@@ -22,6 +22,8 @@ from .auth_helper import authenticate_user, create_access_token, oauth2_scheme, 
 
 from repositories.user import UserRepo
 
+from models.wallet import Wallet
+
 router = APIRouter(prefix="/user", tags=["user"])
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -41,7 +43,13 @@ async def create_user(
             detail="User or email already exists",
         )
     user_dict["hashed_password"] = hash_password(user_dict["hashed_password"])
-    await UserRepo().add_one(user_dict)
+    
+    new_user = await UserRepo().add_one(user_dict)
+
+    new_wallet = Wallet(user_id=new_user.id)
+    async with db.begin():
+        db.add(new_wallet)
+    
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 

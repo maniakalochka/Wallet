@@ -23,9 +23,3 @@ class User(Base):
     def __repr__(self):
         return f"<User {self.last_name}>"
 
-@event.listens_for(User, 'after_insert')
-async def create_wallet_after_user_insert(mapper, connection, target):
-    async with async_session() as session:
-        async with session.begin():
-            new_wallet = Wallet(user_id=target.id)
-            session.add(new_wallet)
