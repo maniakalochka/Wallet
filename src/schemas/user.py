@@ -11,7 +11,7 @@ class UserBase(BaseModel):
 
     class Config:
         from_attributes = True
-        
+
 
 class UserCreate(UserBase):
     pass
@@ -19,6 +19,7 @@ class UserCreate(UserBase):
 
 class UserUpdatePassword(BaseModel):
     password: Optional[str] = Field(..., example="qwerty", title="Password")
+
 
 class UserLogin(BaseModel):
     username: str = Field(..., example="RobertSmith", title="Username")

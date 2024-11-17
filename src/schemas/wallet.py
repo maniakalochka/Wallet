@@ -4,17 +4,17 @@ from models.wallet import CurrencyEnum
 
 
 class WalletBase(BaseModel):
-    currency: str = Field('RUB', example='RUB', title='Currency')
+    currency: str = Field("RUB", example="RUB", title="Currency")
 
     class Config:
         from_attributes = True
 
 
 class WalletCreate(BaseModel):
-    currency: str = Field(CurrencyEnum.RUB, example='RUB', title='Currency')
+    currency: str = Field(CurrencyEnum.RUB, example="RUB", title="Currency")
 
     class Config:
-        from_attributes = True 
+        from_attributes = True
 
 
 class WalletUpdate(WalletCreate):
