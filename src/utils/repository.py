@@ -30,13 +30,9 @@ class SQLAlchemyRepository(AbstractRepository):
             res = result.scalars().first()
             return res
 
-    async def deactivate_user(self, **kwargs):
+    async def deactivate_user(self, id):
         async with async_session() as session:
-            stmt = (
-                update(self.model)
-                .where(self.model.username == kwargs["username"])
-                .values(is_active=False)
-            )
+            stmt = update(self.model).where(self.model.id == id).values(is_active=False)
             await session.execute(stmt)
             await session.commit()
             return {"status_code": status.HTTP_200_OK, "transaction": "Successful"}

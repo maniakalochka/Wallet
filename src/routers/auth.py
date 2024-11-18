@@ -123,10 +123,7 @@ async def read_current_user(
 async def deactivate_user_by_id(
     user: UserDeactivate, db: Annotated[AsyncSession, Depends(get_db)]
 ):
-
-    stmt = update(User).where(User.username == user.username).values(is_active=False)
-    await db.execute(stmt)
-    await db.commit()
+    user = await UserRepo().deactivate_user(user.id)
     return {
         "status_code": status.HTTP_200_OK,
         "transaction": "User deactivated successfully",

@@ -38,5 +38,5 @@ class UserRead(BaseModel):
 
 
 class UserDeactivate(BaseModel):
-    username: str = Field(..., example="RobertSmith", title="Username")
+    id: int = Field(..., example="1", title="User ID")
     is_active: bool = Field(..., example=False, title="Is Active")
