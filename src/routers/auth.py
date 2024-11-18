@@ -4,7 +4,12 @@ from sqlalchemy import select, insert, update
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
-from schemas.user import UserCreate, SuperUserCreate, UserDeactivate, UserLogin
+from schemas.user import (
+    UserCreate,
+    UserDeactivate,
+    UserLogin,
+    UserRead,
+)
 from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,6 +31,7 @@ from .auth_helper import (
     ALGORITHM,
     hash_password,
     verify_password,
+    get_current_user,
 )
 
 from repositories.user import UserRepo
@@ -62,25 +68,6 @@ async def create_user(
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
-@router.post("/superuser")
-async def create_superuser(
-    db: Annotated[AsyncSession, Depends(get_db)], create_superuser: SuperUserCreate
-):
-    user_dict = create_superuser.model_dump()
-    existing_user = await UserRepo().check_exists(
-        username=create_superuser.username, email=create_superuser.email
-    )
-
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User or email already exists",
-        )
-
-    await UserRepo().add_one(user_dict)
-    return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
-
-
 @router.post("/login")
 async def login_user(
     db: Annotated[AsyncSession, Depends(get_db)], user_login: UserLogin
@@ -99,6 +86,7 @@ async def login_user(
     }
 
 
+# TODO "соединить" с /login??
 @router.post("/token")
 async def create_token(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -118,8 +106,16 @@ async def create_token(
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.get("/read_current_user")
-async def read_current_user(user: User = Depends(oauth2_scheme)):
+@router.get("/me", response_model=UserRead)
+async def read_current_user(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
+):
+    stmt = select(User).where(User.username == current_user.username)
+    result = await db.execute(stmt)
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
@@ -127,6 +123,7 @@ async def read_current_user(user: User = Depends(oauth2_scheme)):
 async def deactivate_user_by_id(
     user: UserDeactivate, db: Annotated[AsyncSession, Depends(get_db)]
 ):
+
     stmt = update(User).where(User.username == user.username).values(is_active=False)
     await db.execute(stmt)
     await db.commit()
