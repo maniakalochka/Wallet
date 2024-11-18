@@ -69,41 +69,28 @@ async def create_user(
 
 
 @router.post("/login")
-async def login_user(
-    db: Annotated[AsyncSession, Depends(get_db)], user_login: UserLogin
-):
-    user = await UserRepo().find_by_username(user_login.username, user_login.password)
-
-    if not user or not verify_password(user_login.password, user.hashed_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid username or password",
-        )
-
-    return {
-        "status_code": status.HTTP_200_OK,
-        "message": "Login succesful",
-    }
-
-
-# TODO "соединить" с /login??
-@router.post("/token")
-async def create_token(
+async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
+    # user = await UserRepo().find_by_username(user_login.username, user_login.password)
     user = await authenticate_user(db, form_data.username, form_data.password)
 
-    if not user or user.is_active == False:
+    if not user or not user.is_active:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate user"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password, or user is inactive",
         )
-
+    access_token_expires = timedelta(minutes=20)
     token = await create_access_token(
-        user.username, user.id, user.is_admin, timedelta(minutes=20)
+        data={"id": user.id, "username": user.username, "is_admin": user.is_admin},
+        expires_delta=access_token_expires,
     )
 
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+    }
 
 
 @router.get("/me", response_model=UserRead)

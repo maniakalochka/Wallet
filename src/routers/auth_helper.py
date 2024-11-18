@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from core.config import settings
 from passlib.context import CryptContext
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 SECRET_TOKEN = settings.SECRET_TOKEN
 ALGORITHM = "HS256"
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -49,10 +49,10 @@ async def get_current_user(
         )
 
 
-async def authenticate_user(
-    db: Annotated[AsyncSession, Depends(get_db)], username: str, password: str
-):
-    user = await db.scalar(select(User).where(User.username == username))
+async def authenticate_user(db: AsyncSession, username: str, password: str):
+    stmt = select(User).where(User.username == username)
+    result = await db.execute(stmt)
+    user = result.scalar_one_or_none()
     if (
         not user
         or not bcrypt_context.verify(password, user.hashed_password)
@@ -66,10 +66,12 @@ async def authenticate_user(
     return user
 
 
-async def create_access_token(
-    username: str, user_id: int, is_admin: bool, expires_delta: timedelta
-):
-    encode = {"sub": username, "id": user_id, "is_admin": is_admin}
-    expires = datetime.now() + expires_delta
-    encode.update({"exp": expires})
-    return jwt.encode(encode, SECRET_TOKEN, algorithm=ALGORITHM)
+async def create_access_token(data: dict, expires_delta: timedelta):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now() + expires_delta
+    else:
+        expire = datetime.now() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_TOKEN, algorithm=ALGORITHM)
+    return encoded_jwt
