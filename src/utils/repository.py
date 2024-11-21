@@ -14,6 +14,26 @@ class AbstractRepository(ABC):
     async def find_all():
         raise NotImplementedError
 
+    @abstractmethod
+    async def check_exists():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def deactivate_user():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_by_id():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_by_username():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def find_all():
+        raise NotImplementedError
+
 
 class SQLAlchemyRepository(AbstractRepository):
     model = None
