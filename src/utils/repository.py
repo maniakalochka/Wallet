@@ -30,10 +30,6 @@ class AbstractRepository(ABC):
     async def find_by_username():
         raise NotImplementedError
 
-    @abstractmethod
-    async def find_all():
-        raise NotImplementedError
-
 
 class SQLAlchemyRepository(AbstractRepository):
     model = None
