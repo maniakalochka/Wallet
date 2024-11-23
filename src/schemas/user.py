@@ -17,6 +17,10 @@ class UserCreate(UserBase):
     pass
 
 
+class SuperUserCreate(UserBase):
+    pass
+
+
 class UserUpdatePassword(BaseModel):
     password: Optional[str] = Field(..., example="qwerty", title="Password")
 
