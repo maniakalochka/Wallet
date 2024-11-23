@@ -9,6 +9,7 @@ from schemas.user import (
     UserDeactivate,
     UserLogin,
     UserRead,
+    SuperUserCreate,
 )
 from database.db import get_db
 from typing import Annotated
@@ -68,6 +69,28 @@ async def create_user(
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
+@router.post("/mkadmin")
+async def create_admin(
+    db: Annotated[AsyncSession, Depends(get_db)], create_superuser: SuperUserCreate
+):
+    user_dict = create_superuser.model_dump()
+    existing_user = await UserRepo().check_exists(
+        username=create_superuser.username, email=create_superuser.email
+    )
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User or email already exists",
+        )
+    user_dict["hashed_password"] = hash_password(user_dict["hashed_password"])
+    user_dict["is_admin"] = True
+
+    await UserRepo().add_one(user_dict)
+
+    return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
+
+
 @router.post("/login")
 async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -98,7 +121,7 @@ async def read_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    stmt = select(User).where(User.username == current_user.username)
+    stmt = await UserRepo.find_by_username(current_user.username)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     if user is None:
@@ -108,8 +131,14 @@ async def read_current_user(
 
 @router.patch("/{user_id}")
 async def deactivate_user_by_id(
-    user: UserDeactivate, db: Annotated[AsyncSession, Depends(get_db)]
+    user: UserDeactivate,
+    db: Annotated[AsyncSession, Depends(get_db)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ):
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
+        )
     user = await UserRepo().deactivate_user(user.id)
     return {
         "status_code": status.HTTP_200_OK,
