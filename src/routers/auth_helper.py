@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from core.config import settings
 from passlib.context import CryptContext
+from repositories.user import UserRepo
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
 SECRET_TOKEN = settings.SECRET_TOKEN
@@ -50,7 +51,7 @@ async def get_current_user(
 
 
 async def authenticate_user(db: AsyncSession, username: str, password: str):
-    stmt = select(User).where(User.username == username)
+    stmt = await UserRepo().find_by_username(username)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     if (
