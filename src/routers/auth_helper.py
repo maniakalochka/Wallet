@@ -51,9 +51,8 @@ async def get_current_user(
 
 
 async def authenticate_user(db: AsyncSession, username: str, password: str):
-    stmt = await UserRepo().find_by_username(username)
-    result = await db.execute(stmt)
-    user = result.scalar_one_or_none()
+
+    user = await UserRepo().find_by_username(username)
     if (
         not user
         or not bcrypt_context.verify(password, user.hashed_password)
