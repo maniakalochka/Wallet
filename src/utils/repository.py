@@ -30,6 +30,10 @@ class AbstractRepository(ABC):
     async def find_by_username():
         raise NotImplementedError
 
+    @abstractmethod
+    async def add_by_user_id():
+        raise NotImplementedError
+
 
 class SQLAlchemyRepository(AbstractRepository):
     model = None
@@ -65,8 +69,6 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = select(self.model)
             result = await session.execute(stmt)
             res = [row[0] for row in result.fetchall()]
-            result = await session.execute(stmt)
-            res = [row[0] for row in result.fetchall()]
             return res
 
     async def find_by_id(self, id: int):
@@ -76,9 +78,17 @@ class SQLAlchemyRepository(AbstractRepository):
             res = result.scalars().first()
             return res
 
-    async def find_by_username(self, username: str, password: str):
+    async def find_by_username(self, username: str):
         async with async_session() as session:
             stmt = select(self.model).where(self.model.username == username)
             result = await session.execute(stmt)
             res = result.scalars().first()
             return res
+
+    async def add_by_user_id(self, user_id: int, data: dict):
+        async with async_session() as session:
+            wallet_data = {"user_id": user_id, **data}
+            stmt = insert(self.model).values(**wallet_data).returning(self.model.id)
+            res = await session.execute(stmt)
+            await session.commit()
+            return res.scalar_one()
