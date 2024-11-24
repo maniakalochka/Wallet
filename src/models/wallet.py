@@ -15,7 +15,7 @@ class Wallet(Base):
 
     id = Column(Integer, primary_key=True)
     currency = Column(Enum(CurrencyEnum), default=CurrencyEnum.RUB)
-    user_id = Column(Integer, ForeignKey("user.id"))
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     user = relationship("User", back_populates="wallet")
     balance = Column(Float, default=0.0)
     sent_transactions = relationship(
