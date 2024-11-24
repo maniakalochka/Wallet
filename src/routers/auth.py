@@ -96,7 +96,6 @@ async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
-    # user = await UserRepo().find_by_username(user_login.username, user_login.password)
     user = await authenticate_user(db, form_data.username, form_data.password)
 
     if not user or not user.is_active:
@@ -121,7 +120,7 @@ async def read_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    stmt = await UserRepo.find_by_username(current_user.username)
+    stmt = await UserRepo().find_by_username(current_user.username)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     if user is None:
