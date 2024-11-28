@@ -15,6 +15,9 @@ app.include_router(transaction.transaction_router, tags=["transaction"])
 
 @app.get("/")
 async def welcome() -> dict:
+    """
+    Start page
+    """
     return {"message": "Welcome to Wallet"}
 
 

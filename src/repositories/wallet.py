@@ -8,6 +8,9 @@ class WalletRepo(SQLAlchemyRepository):
     model = Wallet
 
     async def find_all(self, user_id):
+        """
+        override the find_all method to filter by user_id
+        """
         async with async_session() as session:
             async with session.begin():
                 stmt = select(self.model).where(self.model.user_id == user_id)

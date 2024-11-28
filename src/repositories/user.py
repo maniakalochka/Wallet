@@ -9,6 +9,9 @@ class UserRepo(SQLAlchemyRepository):
     model = User
 
     async def add_one(self, data: dict):
+        """
+        Override the add_one method to return the newly created user
+        """
         async with async_session() as session:
             async with session.begin():
                 stmt = insert(self.model).values(**data).returning(self.model.id)
