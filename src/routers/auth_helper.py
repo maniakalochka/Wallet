@@ -66,7 +66,7 @@ async def authenticate_user(db: AsyncSession, username: str, password: str):
     return user
 
 
-async def create_access_token(data: dict, expires_delta: timedelta):
+def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now() + expires_delta
