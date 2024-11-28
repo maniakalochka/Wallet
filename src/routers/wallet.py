@@ -15,6 +15,9 @@ async def add_wallet(
     wallet: WalletCreate,
     current_user: dict = Depends(get_current_user),
 ):
+    """
+    Create a new wallet for the current user
+    """
     if current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user"
@@ -31,10 +34,15 @@ async def add_wallet(
 async def get_wallets(
     current_user: Annotated[dict, Depends(get_current_user)],
 ):
+    """
+    Get all wallets for the current user
+    """
     if current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid user"
         )
     user_id = current_user.id
-    wallets = await WalletRepo().find_all(user_id)
+    wallets = await WalletRepo().find_all(
+        user_id
+    )  # find_all function overridden in WalletRepo
     return wallets

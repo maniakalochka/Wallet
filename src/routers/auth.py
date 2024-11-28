@@ -48,6 +48,9 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def create_user(
     db: Annotated[AsyncSession, Depends(get_db)], create_user: UserCreate
 ):
+    """
+    Create a new user, and a wallet for the user
+    """
     user_dict = create_user.model_dump()
     existing_user = await UserRepo().check_exists(
         username=create_user.username, email=create_user.email
@@ -73,6 +76,9 @@ async def create_user(
 async def create_admin(
     db: Annotated[AsyncSession, Depends(get_db)], create_superuser: SuperUserCreate
 ):
+    """
+    create a superuser, and DON'T create wallet
+    """
     user_dict = create_superuser.model_dump()
     existing_user = await UserRepo().check_exists(
         username=create_superuser.username, email=create_superuser.email
@@ -96,6 +102,9 @@ async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ):
+    """
+    Login a user, and return an access token
+    """
     user = await authenticate_user(db, form_data.username, form_data.password)
 
     if not user or not user.is_active:
@@ -120,6 +129,9 @@ async def read_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
+    """
+    Return the current user
+    """
     stmt = await UserRepo().find_by_username(current_user.username)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
@@ -134,6 +146,9 @@ async def deactivate_user_by_id(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
+    """
+    Ban a user by id (Only admin can do this)
+    """
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"

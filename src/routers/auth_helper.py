@@ -29,6 +29,9 @@ async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
+    """
+    Get the current user from the token (Used in Depends())
+    """
     try:
         payload = jwt.decode(token, SECRET_TOKEN, algorithms=[ALGORITHM])
         user_id: int = payload.get("id")
@@ -51,7 +54,9 @@ async def get_current_user(
 
 
 async def authenticate_user(db: AsyncSession, username: str, password: str):
-
+    """
+    Authenticate the user using the username and password
+    """
     user = await UserRepo().find_by_username(username)
     if (
         not user
@@ -67,6 +72,9 @@ async def authenticate_user(db: AsyncSession, username: str, password: str):
 
 
 def create_access_token(data: dict, expires_delta: timedelta):
+    """
+    Create an access token for the user
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now() + expires_delta
