@@ -8,9 +8,9 @@ app = FastAPI(
 )
 
 
-app.include_router(auth.router, tags=["user"])
-app.include_router(wallet.router, tags=["wallet"])
-app.include_router(transaction.router, tags=["transaction"])
+app.include_router(auth.auth_router, tags=["user"])
+app.include_router(wallet.wallet_router, tags=["wallet"])
+app.include_router(transaction.transaction_router, tags=["transaction"])
 
 
 @app.get("/")

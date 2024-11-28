@@ -39,12 +39,12 @@ from repositories.user import UserRepo
 
 from models.wallet import Wallet
 
-router = APIRouter(prefix="/user", tags=["user"])
+auth_router = APIRouter(prefix="/user", tags=["user"])
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-@router.post("/")
+@auth_router.post("/")
 async def create_user(
     db: Annotated[AsyncSession, Depends(get_db)], create_user: UserCreate
 ):
@@ -69,7 +69,7 @@ async def create_user(
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
-@router.post("/mkadmin")
+@auth_router.post("/mkadmin")
 async def create_admin(
     db: Annotated[AsyncSession, Depends(get_db)], create_superuser: SuperUserCreate
 ):
@@ -91,7 +91,7 @@ async def create_admin(
     return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
 
 
-@router.post("/login")
+@auth_router.post("/login")
 async def login(
     db: Annotated[AsyncSession, Depends(get_db)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -115,7 +115,7 @@ async def login(
     }
 
 
-@router.get("/me", response_model=UserRead)
+@auth_router.get("/me", response_model=UserRead)
 async def read_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
@@ -128,7 +128,7 @@ async def read_current_user(
     return user
 
 
-@router.patch("/{user_id}")
+@auth_router.patch("/{user_id}")
 async def deactivate_user_by_id(
     user: UserDeactivate,
     db: Annotated[AsyncSession, Depends(get_db)],

@@ -7,10 +7,10 @@ from repositories.wallet import WalletRepo
 from .auth_helper import get_current_user
 from models.wallet import Wallet
 
-router = APIRouter(prefix="/wallet", tags=["wallet"])
+wallet_router = APIRouter(prefix="/wallet", tags=["wallet"])
 
 
-@router.post("/")
+@wallet_router.post("/")
 async def add_wallet(
     wallet: WalletCreate,
     current_user: dict = Depends(get_current_user),
@@ -27,7 +27,7 @@ async def add_wallet(
     }
 
 
-@router.get("/all")
+@wallet_router.get("/all")
 async def get_wallets(
     current_user: Annotated[dict, Depends(get_current_user)],
 ):
