@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from core.config import settings
 from routers import auth, wallet, transaction
 
