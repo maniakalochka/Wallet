@@ -3,7 +3,7 @@ from typing import List, Optional, Annotated
 
 
 class TransactionBase(BaseModel):
-    amount: float = Field(0.0, example=100.0, title="Amount")
+    amount: float = Field(0.0, example=100.0, title="Amount", gt=0.0)
     description: Optional[str] = Field(
         None, example="Transaction message", title="Description"
     )
@@ -16,8 +16,4 @@ class TransactionBase(BaseModel):
 
 
 class TransactionCreate(TransactionBase):
-    pass
-
-
-class TransctionUpdate(TransactionBase):
     pass

@@ -1,7 +1,9 @@
+from fastapi import HTTPException, status
 from utils.repository import SQLAlchemyRepository
 from models.wallet import Wallet
 from database.db import async_session
-from sqlalchemy import select
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class WalletRepo(SQLAlchemyRepository):
@@ -17,3 +19,59 @@ class WalletRepo(SQLAlchemyRepository):
                 res = await session.execute(stmt)
                 wallets = res.scalars().all()
                 return wallets
+
+    async def get_balance(self, wallet_id: int, db: AsyncSession):
+        stmt = select(self.model).where(self.model.id == wallet_id)
+        res = await db.execute(stmt)
+        wallet = res.scalar_one_or_none()
+        if wallet is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Wallet {wallet_id} not found",
+            )
+        return wallet.balance
+
+    # async def get_balance(self, wallet_id: int, db: AsyncSession):
+    #     async with async_session() as session:
+    #         async with session.begin():
+    #             stmt = select(self.model).where(self.model.id == wallet_id)
+    #             res = await session.execute(stmt)
+    #             wallet = res.scalar_one_or_none()
+    #             if wallet is None:
+    #                 raise HTTPException(
+    #                     status_code=status.HTTP_404_NOT_FOUND,
+    #                     detail=f"Wallet {wallet_id} not found",
+    #                 )
+    #             return wallet.balance
+
+    async def update_balance(
+        self, wallet_id: int, new_balance: float, db: AsyncSession
+    ):
+        stmt = select(self.model).where(self.model.id == wallet_id)
+        res = await db.execute(stmt)
+        wallet = res.scalar_one_or_none()
+        if wallet is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Wallet {wallet_id} not found",
+            )
+        wallet.balance = new_balance
+        db.add(wallet)
+        await db.commit()
+
+    # async def update_balance(self, wallet_id: int, new_balance: float) -> None:
+    #     async with async_session() as session:
+    #         async with session.begin():
+    #             stmt = (
+    #                 update(self.model)
+    #                 .where(self.model.id == wallet_id)
+    #                 .values(new_balance)
+    #                 .execution_options(synchronize_session="fetch")
+    #             )
+    #             result = await session.execute(stmt)
+    #             if result.rowcount == 0:
+    #                 raise HTTPException(
+    #                     status_code=status.HTTP_404_NOT_FOUND,
+    #                     detail=f"Wallet {wallet_id} not found",
+    #                 )
+    #             await session.commit()
