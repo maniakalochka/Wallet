@@ -113,7 +113,7 @@ async def login(
             detail="Invalid username or password, or user is inactive",
         )
     access_token_expires = timedelta(minutes=20)
-    token = await create_access_token(
+    token = create_access_token(
         data={"id": user.id, "username": user.username, "is_admin": user.is_admin},
         expires_delta=access_token_expires,
     )
@@ -132,9 +132,7 @@ async def read_current_user(
     """
     Return the current user
     """
-    stmt = await UserRepo().find_by_username(current_user.username)
-    result = await db.execute(stmt)
-    user = result.scalar_one_or_none()
+    user = await UserRepo().find_by_username(current_user.username)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
