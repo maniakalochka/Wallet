@@ -1,7 +1,8 @@
 from database.db import Base
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
+from models.wallet import Wallet
 
 
 class TransactionTypeEnum(enum.Enum):
@@ -12,20 +13,20 @@ class TransactionTypeEnum(enum.Enum):
 class Transaction(Base):
     __tablename__ = "transaction"
 
-    id = Column(Integer, primary_key=True)
-    sender_wallet_id = Column(Integer, ForeignKey("wallet.id"), nullable=False)
-    receiver_wallet_id = Column(Integer, ForeignKey("wallet.id"), nullable=False)
-    sender_wallet = relationship(
-        "Wallet", foreign_keys=[sender_wallet_id], back_populates="sent_transactions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_wallet_id: Mapped[int] = mapped_column(
+        foreign_key="wallet.id", nullable=False
     )
-    receiver_wallet = relationship(
-        "Wallet",
-        foreign_keys=[receiver_wallet_id],
-        back_populates="received_transactions",
+    receiver_wallet_id: Mapped[int] = mapped_column(
+        foreign_key="wallet.id", nullable=False
     )
-    amount = Column(Float, default=0.0)
-    description = Column(String, nullable=True)
-    type = Column(Enum(TransactionTypeEnum), default=TransactionTypeEnum.INCOME)
+    sender_wallet: Mapped["Wallet"] = relationship(back_populates="sent_transactions")
+    receiver_wallet: Mapped["Wallet"] = relationship(
+        back_populates="received_transactions"
+    )
+    amount: Mapped[float] = mapped_column(default=0.0)
+    description: Mapped[str] = mapped_column()
+    type: Mapped[TransactionTypeEnum] = mapped_column(default=TransactionTypeEnum)
 
     def __repr__(self):
         return f"<Transaction {self.id}>"

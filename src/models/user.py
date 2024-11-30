@@ -1,6 +1,7 @@
 from database.db import Base, async_session
+import models
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, event
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import enum
@@ -10,15 +11,15 @@ from models.wallet import Wallet
 class User(Base):
     __tablename__ = "user"
 
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String)
-    last_name = Column(String)
-    username = Column(String, unique=True)
-    email = Column(String, unique=True)
-    hashed_password = Column(String)
-    is_active = Column(Boolean, default=True)
-    is_admin = Column(Boolean, default=False)
-    wallet = relationship("Wallet", back_populates="user")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    first_name: Mapped[str] = mapped_column()
+    last_name: Mapped[str] = mapped_column()
+    username: Mapped[str] = mapped_column(unique=True)
+    email: Mapped[str] = mapped_column(unique=True)
+    hashed_password: Mapped[str] = mapped_column()
+    is_active: Mapped[bool] = mapped_column(default=True)
+    is_admin: Mapped[bool] = mapped_column(default=False)
+    wallet: Mapped[Wallet] = relationship(back_populates="user")
 
     def __repr__(self):
         return f"<User {self.last_name}>"

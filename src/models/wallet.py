@@ -1,7 +1,9 @@
 from database.db import Base
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
+from models.transaction import Transaction
+from models.user import User
 
 
 class CurrencyEnum(enum.Enum):
@@ -13,18 +15,15 @@ class CurrencyEnum(enum.Enum):
 class Wallet(Base):
     __tablename__ = "wallet"
 
-    id = Column(Integer, primary_key=True)
-    currency = Column(Enum(CurrencyEnum), default=CurrencyEnum.RUB)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    user = relationship("User", back_populates="wallet")
-    balance = Column(Float, default=0.0)
-    sent_transactions = relationship(
-        "Transaction",
-        foreign_keys="[Transaction.sender_wallet_id]",
-        back_populates="sender_wallet",
+    id: Mapped[int] = mapped_column(primary_key=True)
+    currency: Mapped[CurrencyEnum] = mapped_column(default=CurrencyEnum.RUB)
+    user_id: Mapped[int] = mapped_column(foreign_key="user.id", nullable=False)
+    user: Mapped["User"] = relationship(back_populates="wallet")
+    balance: Mapped[float] = mapped_column(default=0.0)
+    sent_transactions: Mapped["Transaction"] = relationship(
+        foreign_keys="[Transaction.sender_wallet_id]", back_populates="sender_wallet"
     )
-    received_transactions = relationship(
-        "Transaction",
+    received_transactions: Mapped["Transaction"] = relationship(
         foreign_keys="[Transaction.receiver_wallet_id]",
         back_populates="receiver_wallet",
     )
