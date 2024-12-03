@@ -19,6 +19,9 @@ async def add_transaction(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
+    """
+    Создает транзакцию (перевод с одного счета на другой)
+    """
     wallet_repo = WalletRepo()
     sender_balance = await wallet_repo.get_balance(transaction.sender_wallet_id, db)
 
@@ -58,11 +61,16 @@ async def get_transactions(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
+    """
+    Получает все транзакции конкретного пользователя
+    Работает только для администарторов
+    """
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
         )
-    transactions = await TransactionRepo().find_all()
+    user_id = current_user.id
+    transactions = await TransactionRepo().find_all(user_id)
     return transactions
 
 
@@ -71,7 +79,7 @@ async def get_my_transactions(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    transactions = await TransactionRepo().find_by_user_id(current_user.id)
+    transactions = await TransactionRepo().find_by_id(current_user.id)
     return transactions
 
 
