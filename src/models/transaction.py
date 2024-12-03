@@ -1,4 +1,4 @@
-from database.db import Base
+from models.base import Base
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
@@ -13,7 +13,6 @@ class TransactionTypeEnum(enum.Enum):
 class Transaction(Base):
     __tablename__ = "transaction"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     sender_wallet_id: Mapped[int] = mapped_column(
         foreign_key="wallet.id", nullable=False
     )

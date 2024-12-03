@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
 from models.transaction import Transaction
 from models.user import User
+from models.base import Base
 
 
 class CurrencyEnum(enum.Enum):
@@ -15,7 +16,6 @@ class CurrencyEnum(enum.Enum):
 class Wallet(Base):
     __tablename__ = "wallet"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     currency: Mapped[CurrencyEnum] = mapped_column(default=CurrencyEnum.RUB)
     user_id: Mapped[int] = mapped_column(foreign_key="user.id", nullable=False)
     user: Mapped["User"] = relationship(back_populates="wallet")

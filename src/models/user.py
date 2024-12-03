@@ -1,4 +1,5 @@
-from database.db import Base, async_session
+from database.db import async_session
+from models.base import Base
 import models
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, event
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,7 +12,6 @@ from models.wallet import Wallet
 class User(Base):
     __tablename__ = "user"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column()
     last_name: Mapped[str] = mapped_column()
     username: Mapped[str] = mapped_column(unique=True)

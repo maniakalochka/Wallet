@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     async_sessionmaker,
 )
-from sqlalchemy.orm import DeclarativeBase
+from models.base import Base
 
 DATABASE_URL = settings.DB_URL
 ECHO = settings.ECHO
@@ -18,10 +18,6 @@ engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
 async_session = async_sessionmaker(
     bind=engine, class_=AsyncSession, autoflush=True, expire_on_commit=EXPIRE_ON_COMMIT
 )
-
-
-class Base(DeclarativeBase):
-    pass
 
 
 async def get_db():
