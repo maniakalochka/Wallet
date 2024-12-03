@@ -1,8 +1,7 @@
-import models
 from utils.repository import SQLAlchemyRepository
 from models.transaction import Transaction
 from database.db import async_session
-from fastapi import select
+from sqlalchemy import select
 
 
 class TransactionRepo(SQLAlchemyRepository):

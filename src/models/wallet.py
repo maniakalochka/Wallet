@@ -1,10 +1,17 @@
 from database.db import Base
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
+from sqlalchemy import Integer, String, Float, ForeignKey, Enum
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
 from models.transaction import Transaction
-from models.user import User
-from models.base import Base
+
+# from models.user import User
+# from models.base import Base
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from models.transaction import Transaction
+    from models.user import User
 
 
 class CurrencyEnum(enum.Enum):
@@ -17,7 +24,7 @@ class Wallet(Base):
     __tablename__ = "wallet"
 
     currency: Mapped[CurrencyEnum] = mapped_column(default=CurrencyEnum.RUB)
-    user_id: Mapped[int] = mapped_column(foreign_key="user.id", nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     user: Mapped["User"] = relationship(back_populates="wallet")
     balance: Mapped[float] = mapped_column(default=0.0)
     sent_transactions: Mapped["Transaction"] = relationship(
