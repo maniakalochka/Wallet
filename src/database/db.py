@@ -10,7 +10,7 @@ from models.base import Base
 
 DATABASE_URL = settings.DB_URL
 
-engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
+engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True)
 
 # Session Factory
 async_session = async_sessionmaker(
