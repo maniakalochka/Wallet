@@ -8,10 +8,13 @@ from models import user, wallet, transaction
 from database.db import Base
 import sys
 import os
+from core.config import settings
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 # Настройка логирования
 config = context.config
+
+config.set_main_option("sqlalchemy.url", settings.DB_URL)
 fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
