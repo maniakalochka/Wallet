@@ -22,9 +22,6 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_URL: ClassVar[str]
 
-    ECHO: bool = True
-    EXPIRE_ON_COMMIT: bool = False
-
     # --- Auth Settings ---
     SECRET_TOKEN: str
 

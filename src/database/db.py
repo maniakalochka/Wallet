@@ -9,14 +9,12 @@ from sqlalchemy.ext.asyncio import (
 from models.base import Base
 
 DATABASE_URL = settings.DB_URL
-ECHO = settings.ECHO
-EXPIRE_ON_COMMIT = settings.EXPIRE_ON_COMMIT
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=ECHO)
 
 # Session Factory
 async_session = async_sessionmaker(
-    bind=engine, class_=AsyncSession, autoflush=True, expire_on_commit=EXPIRE_ON_COMMIT
+    bind=engine, class_=AsyncSession, autoflush=True, expire_on_commit=False
 )
 
 
