@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from models.wallet import Wallet
+    from models.user import User
 
 
 class TransactionTypeEnum(enum.Enum):
@@ -32,6 +33,8 @@ class Transaction(Base):
     amount: Mapped[float] = mapped_column(default=0.0)
     description: Mapped[str] = mapped_column()
     type: Mapped[TransactionTypeEnum] = mapped_column(default=TransactionTypeEnum)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    user: Mapped["User"] = relationship("User", back_populates="transactions")
 
     def __repr__(self):
         return f"<Transaction {self.id}>"

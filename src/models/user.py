@@ -6,7 +6,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 import enum
-from models.wallet import Wallet
+from typing import TYPE_CHECKING
+
+
+if TYPE_CHECKING:
+    from models.transaction import Transaction
+    from models.wallet import Wallet
 
 
 class User(Base):
@@ -19,7 +24,10 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column()
     is_active: Mapped[bool] = mapped_column(default=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
-    wallet: Mapped[Wallet] = relationship(back_populates="user")
+    wallet: Mapped["Wallet"] = relationship("Wallet", back_populates="user")
+    transactions: Mapped["Transaction"] = relationship(
+        "Transaction", back_populates="user"
+    )
 
     def __repr__(self):
         return f"<User {self.last_name}>"
