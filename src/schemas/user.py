@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional, Annotated
+from typing import Optional
 
 
 class UserBase(BaseModel):

@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
-from typing import List, Optional, Annotated
+from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class TransactionBase(BaseModel):
