@@ -1,11 +1,10 @@
 from database.db import Base
-from sqlalchemy import Integer, String, Float, ForeignKey, Enum
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
 from models.transaction import Transaction
 
-# from models.user import User
-# from models.base import Base
+
 from typing import TYPE_CHECKING
 
 

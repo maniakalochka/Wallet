@@ -1,11 +1,5 @@
-from database.db import async_session
 from models.base import Base
-import models
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum, Boolean, event
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
-import enum
 from typing import TYPE_CHECKING
 
 

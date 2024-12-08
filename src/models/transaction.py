@@ -1,5 +1,5 @@
 from models.base import Base
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Enum
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
 from typing import TYPE_CHECKING
