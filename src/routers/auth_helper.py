@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, status, HTTPException
 from database.db import get_db
 from jose import jwt, JWTError
-from sqlalchemy import select
 from models.user import User
 from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer

@@ -1,11 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from schemas.wallet import WalletCreate, WalletUpdate
+from schemas.wallet import WalletCreate
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
 from repositories.wallet import WalletRepo
 from .auth_helper import get_current_user
-from models.wallet import Wallet
 
 wallet_router = APIRouter(prefix="/wallet", tags=["wallet"])
 

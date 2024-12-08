@@ -1,13 +1,9 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-from sqlalchemy import select, insert, update
-
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 from models.user import User
 from schemas.user import (
     UserCreate,
     UserDeactivate,
-    UserLogin,
     UserRead,
     SuperUserCreate,
 )
@@ -17,21 +13,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from passlib.context import CryptContext
 
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm
 
-from core.config import settings
 
-from datetime import datetime, timedelta
-from jose import jwt, JWTError
+from datetime import timedelta
 
 from .auth_helper import (
     authenticate_user,
     create_access_token,
-    oauth2_scheme,
-    SECRET_TOKEN,
-    ALGORITHM,
     hash_password,
-    verify_password,
     get_current_user,
 )
 

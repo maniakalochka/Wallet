@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
 from repositories.transaction import TransactionRepo
 from models.user import User
-from models.wallet import Wallet
 from .auth_helper import get_current_user
 
 
