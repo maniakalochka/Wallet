@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from database.db import async_session
 from sqlalchemy import insert, select, or_, update
 from fastapi import status
