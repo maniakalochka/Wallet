@@ -1,7 +1,8 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
-from typing import ClassVar
+from typing import Literal, Optional
 
+from pydantic import model_validator, ConfigDict
 from pathlib import Path
 
 #  Load environment variables from .env file
@@ -12,6 +13,7 @@ load_dotenv(dotenv_path=env_path)
 class Settings(BaseSettings):
     # --- App Settings ---
     APP_NAME: str = "Wallet"
+    MODE: Literal["DEV", "TEST", "PROD"] = "TEST"
 
     # --- Database Settings ---
     DB_USER: str
@@ -19,21 +21,38 @@ class Settings(BaseSettings):
     DB_HOST: str
     DB_PORT: str
     DB_NAME: str
-    DB_URL: ClassVar[str]
+    DB_URL: Optional[str] = None
 
     # --- Auth Settings ---
     SECRET_TOKEN: str
 
     # --- Other Settings ---
-    DEBUG: bool = True
-    IS_TESTING: bool = True
+    TEST_DB_USER: str
+    TEST_DB_PASS: str
+    TEST_DB_HOST: str
+    TEST_DB_PORT: int
+    TEST_DB_NAME: str
+    TEST_DB_URL: Optional[str] = None
 
-    class Config:
-        env_file = str(env_path)
+    @model_validator(mode="before")
+    @classmethod
+    def assemble_db_urls(cls, values):
+        # Формируем значения для DB_URL и TEST_DB_URL
+        if not values.get("DB_URL"):
+            values["DB_URL"] = (
+                f"postgresql+asyncpg://{values['DB_USER']}:{values['DB_PASS']}"
+                f"@{values['DB_HOST']}:{values['DB_PORT']}/{values['DB_NAME']}"
+            )
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        Settings.DB_URL = f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        if not values.get("TEST_DB_URL"):
+            values["TEST_DB_URL"] = (
+                f"postgresql+asyncpg://{values['TEST_DB_USER']}:{values['TEST_DB_PASS']}"
+                f"@{values['TEST_DB_HOST']}:{values['TEST_DB_PORT']}/{values['TEST_DB_NAME']}"
+            )
+
+        return values
+
+    model_config = ConfigDict(env_file=str(env_path))
 
 
 settings = Settings()

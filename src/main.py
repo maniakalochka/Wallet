@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from core.config import settings
 from routers import auth, wallet, transaction
+from core.config import Settings
 
 
 app = FastAPI(

@@ -1,5 +1,5 @@
 from core.config import settings
-
+from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine,
@@ -8,9 +8,17 @@ from sqlalchemy.ext.asyncio import (
 )
 from models.base import Base
 
-DATABASE_URL = settings.DB_URL
+if settings.MODE == "TEST":
+    DATABASE_URL = settings.TEST_DB_URL
+    DATABASE_PARAMS = {"poolclass": NullPool}
+else:
+    DATABASE_URL = settings.DB_URL
+    DATABASE_PARAMS = {"poolclass": NullPool}
 
-engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True)
+
+engine: AsyncEngine = create_async_engine(
+    url=DATABASE_URL, echo=True, **DATABASE_PARAMS
+)
 
 # Session Factory
 async_session = async_sessionmaker(
@@ -30,7 +38,7 @@ async def get_db():
             await session.close()
 
 
-async def init_db():
+async def init_db() -> None:
     """Init database tables"""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

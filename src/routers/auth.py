@@ -29,7 +29,7 @@ from repositories.user import UserRepo
 
 from models.wallet import Wallet
 
-auth_router = APIRouter(prefix="/user", tags=["user"])
+auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -59,7 +59,7 @@ async def create_user(
     async with db.begin():
         db.add(new_wallet)
 
-    return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
+    return {"status_code": status.HTTP_201_CREATED, "msg": "Successful"}
 
 
 @auth_router.post("/mkadmin")
@@ -84,7 +84,7 @@ async def create_admin(
 
     await UserRepo().add_one(user_dict)
 
-    return {"status_code": status.HTTP_201_CREATED, "transaction": "Successful"}
+    return {"status_code": status.HTTP_201_CREATED, "msg": "Successful"}
 
 
 @auth_router.post("/login")
@@ -144,5 +144,5 @@ async def deactivate_user_by_id(
     user = await UserRepo().deactivate_user(user.id)
     return {
         "status_code": status.HTTP_200_OK,
-        "transaction": "User deactivated successfully",
+        "msg": "User deactivated successfully",
     }
