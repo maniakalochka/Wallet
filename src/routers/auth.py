@@ -76,7 +76,7 @@ async def create_admin(
 
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_409_CONFLICT,
             detail="User or email already exists",
         )
     user_dict["hashed_password"] = hash_password(user_dict["hashed_password"])
@@ -109,6 +109,7 @@ async def login(
     )
 
     return {
+        "status_code": status.HTTP_200_OK,
         "access_token": token,
         "token_type": "bearer",
     }
