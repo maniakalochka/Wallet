@@ -2,9 +2,10 @@ import pytest
 from models.base import Base
 from core.config import settings
 from database.db import engine, async_session
-from fastapi import FastAPI
 from starlette.testclient import TestClient
+from main import app as fastapi_app
 from main import app
+from httpx import AsyncClient
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -27,5 +28,11 @@ def event_loop():
 
 @pytest.fixture(scope="module")
 def client():
-    with TestClient(app) as client:
+    with TestClient(app, base_url="http://test") as client:
         yield client
+
+
+@pytest.fixture(scope="function")
+async def session():
+    async with async_session() as session:
+        yield session
