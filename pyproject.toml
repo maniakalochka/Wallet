@@ -6,7 +6,7 @@ authors = ["maniakalochka <prochorwolochoff@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 fastapi = "^0.115.4"
 pydantic = {extras = ["email"], version = "^2.9.2"}
 pytest = "^8.3.3"
