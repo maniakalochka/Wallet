@@ -10,7 +10,7 @@ from core.config import settings
 from passlib.context import CryptContext
 from repositories.user import UserRepo
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 SECRET_TOKEN = settings.SECRET_TOKEN
 ALGORITHM = "HS256"
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

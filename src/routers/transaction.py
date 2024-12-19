@@ -8,6 +8,7 @@ from repositories.transaction import TransactionRepo
 from models.user import User
 from .auth_helper import get_current_user
 
+from fastapi_cache.decorator import cache
 
 transaction_router = APIRouter(prefix="/transaction", tags=["transaction"])
 
@@ -56,6 +57,7 @@ async def add_transaction(
 
 
 @transaction_router.get("/all")
+@cache(expire=60)
 async def get_transactions(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
@@ -74,6 +76,7 @@ async def get_transactions(
 
 
 @transaction_router.get("/my")
+@cache(expire=60)
 async def get_my_transactions(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
@@ -83,6 +86,7 @@ async def get_my_transactions(
 
 
 @transaction_router.get("/{id}")
+@cache(expire=60)
 async def get_transaction_by_id(
     id: int,
     db: Annotated[AsyncSession, Depends(get_db)],

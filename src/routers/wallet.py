@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
 from repositories.wallet import WalletRepo
 from .auth_helper import get_current_user
+from fastapi_cache.decorator import cache
 
 wallet_router = APIRouter(prefix="/wallet", tags=["wallet"])
 
@@ -30,6 +31,7 @@ async def add_wallet(
 
 
 @wallet_router.get("/all")
+@cache(expire=60)
 async def get_wallets(
     current_user: Annotated[dict, Depends(get_current_user)],
 ):
