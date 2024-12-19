@@ -36,5 +36,5 @@ class Transaction(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     user: Mapped["User"] = relationship("User", back_populates="transactions")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Transaction {self.id}>"

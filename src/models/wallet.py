@@ -34,5 +34,5 @@ class Wallet(Base):
         back_populates="receiver_wallet",
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Wallet {self.id}>"
