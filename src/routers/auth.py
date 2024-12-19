@@ -10,24 +10,19 @@ from schemas.user import (
 from database.db import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from passlib.context import CryptContext
-
 from fastapi.security import OAuth2PasswordRequestForm
-
-
 from datetime import timedelta
-
 from .auth_helper import (
     authenticate_user,
     create_access_token,
     hash_password,
     get_current_user,
 )
-
 from repositories.user import UserRepo
-
 from models.wallet import Wallet
+
+from fastapi_cache.decorator import cache
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -116,6 +111,7 @@ async def login(
 
 
 @auth_router.get("/me", response_model=UserRead)
+@cache(expire=60)
 async def read_current_user(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
