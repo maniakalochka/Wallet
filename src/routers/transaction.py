@@ -53,6 +53,7 @@ async def add_transaction(
 
     # Создаём запись о транзакции
     transaction_dict = transaction.model_dump()
+    transaction_dict["user_id"] = current_user.id
     transaction_id = await TransactionRepo().add_one(transaction_dict)
 
     return {"transaction_id": transaction_id}
