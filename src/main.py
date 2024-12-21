@@ -9,19 +9,18 @@ from redis import Redis
 from redis import asyncio as aioredis
 from sqladmin import Admin, ModelView
 
-from admin.admin_models import (
+from src.admin.admin_models import (
     AdminAuth,
     UserAdmin,
     WalletAdmin,
     authentication_backend,
     TransactionAdmin,
 )
-from core.config import Settings, settings
-from database.db import engine, init_db
-from middleware.middlewares import DBSessionMiddleware
-from models.user import User
-from routers import auth, transaction, wallet
-from logger import logger
+from src.core.config import Settings, settings
+from src.database.db import engine, init_db
+from src.middleware.middlewares import DBSessionMiddleware
+from src.routers import auth, transaction, wallet
+from src.logger import logger
 
 SECRET_TOKEN = settings.SECRET_TOKEN
 
