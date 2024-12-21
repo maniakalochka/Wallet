@@ -12,16 +12,23 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import Redis
 from sqladmin import Admin, ModelView
-from admin.admin_models import UserAdmin
+from admin.admin_models import UserAdmin, WalletAdmin, AdminAuth, authentication_backend
+from core.config import settings
+from middleware.middlewares import DBSessionMiddleware
+
+SECRET_TOKEN = settings.SECRET_TOKEN
 
 
 app = FastAPI(
     title=settings.APP_NAME,
 )
 
+app.add_middleware(DBSessionMiddleware)
 
-admin = Admin(app, engine)
+authentication_backend = AdminAuth(secret_key=SECRET_TOKEN)
+admin = Admin(app, engine, authentication_backend=authentication_backend)
 admin.add_view(UserAdmin)
+admin.add_view(WalletAdmin)
 
 
 @app.on_event("startup")
