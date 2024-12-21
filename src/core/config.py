@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     # --- App Settings ---
     APP_NAME: str = "Wallet"
     MODE: Literal["DEV", "TEST", "PROD"] = "TEST"
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
     # --- Database Settings ---
     DB_USER: str

@@ -1,19 +1,27 @@
+import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import Redis
 from redis import asyncio as aioredis
 from sqladmin import Admin, ModelView
 
-from admin.admin_models import AdminAuth, UserAdmin, WalletAdmin, authentication_backend
+from admin.admin_models import (
+    AdminAuth,
+    UserAdmin,
+    WalletAdmin,
+    authentication_backend,
+    TransactionAdmin,
+)
 from core.config import Settings, settings
 from database.db import engine, init_db
 from middleware.middlewares import DBSessionMiddleware
 from models.user import User
 from routers import auth, transaction, wallet
+from logger import logger
 
 SECRET_TOKEN = settings.SECRET_TOKEN
 
@@ -28,6 +36,7 @@ authentication_backend = AdminAuth(secret_key=SECRET_TOKEN)
 admin = Admin(app, engine, authentication_backend=authentication_backend)
 admin.add_view(UserAdmin)
 admin.add_view(WalletAdmin)
+admin.add_view(TransactionAdmin)
 
 
 @app.on_event("startup")
@@ -48,6 +57,15 @@ async def welcome() -> dict:
     Start page
     """
     return {"message": "Welcome to Wallet"}
+
+
+@app.middleware("http")
+async def add_log(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    logger.info("Request handling time", extra={"time": round(process_time, 4)})
+    return response
 
 
 if __name__ == "__main__":
