@@ -34,6 +34,7 @@ isort = "^5.13.2"
 autoflake = "^2.3.1"
 python-json-logger = "^3.2.1"
 gunicorn = "^23.0.0"
+greenlet = "^3.1.1"
 
 
 [build-system]
