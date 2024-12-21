@@ -13,16 +13,10 @@ if TYPE_CHECKING:
     from models.user import User
 
 
-class CurrencyEnum(enum.Enum):
-    RUB = "RUB"
-    USD = "USD"
-    EUR = "EUR"
-
-
 class Wallet(Base):
     __tablename__ = "wallet"
 
-    currency: Mapped[CurrencyEnum] = mapped_column(default=CurrencyEnum.RUB)
+    currency: Mapped[str] = mapped_column(default="RUB", nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     user: Mapped["User"] = relationship(back_populates="wallet")
     balance: Mapped[float] = mapped_column(default=0.0)
