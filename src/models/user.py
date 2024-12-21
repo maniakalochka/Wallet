@@ -19,10 +19,10 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column()
     is_active: Mapped[bool] = mapped_column(default=True)
     is_admin: Mapped[bool] = mapped_column(default=False)
-    wallet: Mapped["Wallet"] = relationship("Wallet", back_populates="user")
+    wallets: Mapped[list["Wallet"]] = relationship("Wallet", back_populates="user")
     transactions: Mapped["Transaction"] = relationship(
         "Transaction", back_populates="user"
     )
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         return f"<User {self.last_name}>"
