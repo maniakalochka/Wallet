@@ -1,8 +1,10 @@
 from fastapi import status
 from sqlalchemy import insert, or_, select, update
+from sqlalchemy.exc import SQLAlchemyError
 
 from database.db import async_session
 
+from logger import logger
 from .abstract_repo import AbstractRepository
 
 
@@ -10,16 +12,26 @@ class SQLAlchemyRepository(AbstractRepository):
     model = None
 
     async def check_exists(self, **kwargs):
-        async with async_session() as session:
-            stmt = select(self.model).where(
-                or_(
-                    self.model.username == kwargs["username"],
-                    self.model.email == kwargs["email"],
+        try:
+            async with async_session() as session:
+                stmt = select(self.model).where(
+                    or_(
+                        self.model.username == kwargs["username"],
+                        self.model.email == kwargs["email"],
+                    )
                 )
-            )
-            result = await session.execute(stmt)
-            res = result.scalars().first()
+                result = await session.execute(stmt)
+                res = result.scalars().first()
             return res
+        except (SQLAlchemyError, Exception) as e:
+            logger.error("", exc_info=True)
+            if isinstance(e, SQLAlchemyError):
+                msg = "Database error:"
+            else:
+                msg = "Unexpected error:"
+            extra = {**kwargs}
+            msg += ": can't check user exists"
+            logger.error(msg, extra=extra, exc_info=True)
 
     async def deactivate_user(self, id):
         async with async_session() as session:
