@@ -1,9 +1,9 @@
-from pydantic_settings import BaseSettings
-from dotenv import load_dotenv
+from pathlib import Path
 from typing import Literal, Optional
 
-from pydantic import model_validator, ConfigDict
-from pathlib import Path
+from dotenv import load_dotenv
+from pydantic import ConfigDict, model_validator
+from pydantic_settings import BaseSettings
 
 #  Load environment variables from .env file
 env_path = Path(__file__).resolve().parents[2] / ".env"

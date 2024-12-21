@@ -1,5 +1,6 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
+
 from database.db import get_db
 
 

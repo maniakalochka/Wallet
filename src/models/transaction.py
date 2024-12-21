@@ -1,13 +1,14 @@
-from models.base import Base
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from models.base import Base
 
 if TYPE_CHECKING:
-    from models.wallet import Wallet
     from models.user import User
+    from models.wallet import Wallet
 
 
 class TransactionTypeEnum(enum.Enum):

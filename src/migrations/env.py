@@ -1,14 +1,15 @@
 import asyncio
+import os
+import sys
 from logging.config import fileConfig
+
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
-from alembic import context
-from models import user, wallet, transaction
 
-from database.db import Base
-import sys
-import os
 from core.config import settings
+from database.db import Base
+from models import transaction, user, wallet
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 # Настройка логирования

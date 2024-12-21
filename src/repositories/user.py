@@ -1,8 +1,8 @@
-from utils.repository import SQLAlchemyRepository
-from models.user import User
-from database.db import async_session
-
 from sqlalchemy import insert, select
+
+from database.db import async_session
+from models.user import User
+from utils.repository import SQLAlchemyRepository
 
 
 class UserRepo(SQLAlchemyRepository):

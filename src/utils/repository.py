@@ -1,6 +1,8 @@
-from database.db import async_session
-from sqlalchemy import insert, select, or_, update
 from fastapi import status
+from sqlalchemy import insert, or_, select, update
+
+from database.db import async_session
+
 from .abstract_repo import AbstractRepository
 
 

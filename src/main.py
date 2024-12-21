@@ -1,20 +1,19 @@
-from fastapi import FastAPI
-from core.config import settings
-from routers import auth, wallet, transaction
-from core.config import Settings
-from database.db import init_db, engine
-from models.user import User
-
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from redis import asyncio as aioredis
+
+from fastapi import FastAPI
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import Redis
+from redis import asyncio as aioredis
 from sqladmin import Admin, ModelView
-from admin.admin_models import UserAdmin, WalletAdmin, AdminAuth, authentication_backend
-from core.config import settings
+
+from admin.admin_models import AdminAuth, UserAdmin, WalletAdmin, authentication_backend
+from core.config import Settings, settings
+from database.db import engine, init_db
 from middleware.middlewares import DBSessionMiddleware
+from models.user import User
+from routers import auth, transaction, wallet
 
 SECRET_TOKEN = settings.SECRET_TOKEN
 

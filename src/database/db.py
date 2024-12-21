@@ -1,11 +1,8 @@
-from core.config import settings
+from sqlalchemy.ext.asyncio import (AsyncEngine, AsyncSession,
+                                    async_sessionmaker, create_async_engine)
 from sqlalchemy.pool import NullPool
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    create_async_engine,
-    AsyncEngine,
-    async_sessionmaker,
-)
+
+from core.config import settings
 from models.base import Base
 
 if settings.MODE == "TEST":

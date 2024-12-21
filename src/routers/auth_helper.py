@@ -1,13 +1,15 @@
-from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, status, HTTPException
-from database.db import get_db
-from jose import jwt, JWTError
-from models.user import User
 from datetime import datetime, timedelta
+from typing import Annotated
+
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from core.config import settings
+from jose import JWTError, jwt
 from passlib.context import CryptContext
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.config import settings
+from database.db import get_db
+from models.user import User
 from repositories.user import UserRepo
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")

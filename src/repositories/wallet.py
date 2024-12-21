@@ -1,9 +1,10 @@
 from fastapi import HTTPException, status
-from utils.repository import SQLAlchemyRepository
-from models.wallet import Wallet
-from database.db import async_session
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.db import async_session
+from models.wallet import Wallet
+from utils.repository import SQLAlchemyRepository
 
 
 class WalletRepo(SQLAlchemyRepository):

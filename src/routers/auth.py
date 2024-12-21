@@ -1,28 +1,20 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-
-from models.user import User
-from schemas.user import (
-    UserCreate,
-    UserDeactivate,
-    UserRead,
-    SuperUserCreate,
-)
-from database.db import get_db
-from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from passlib.context import CryptContext
-from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
-from .auth_helper import (
-    authenticate_user,
-    create_access_token,
-    hash_password,
-    get_current_user,
-)
-from repositories.user import UserRepo
-from models.wallet import Wallet
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_cache.decorator import cache
+from passlib.context import CryptContext
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.db import get_db
+from models.user import User
+from models.wallet import Wallet
+from repositories.user import UserRepo
+from schemas.user import SuperUserCreate, UserCreate, UserDeactivate, UserRead
+
+from .auth_helper import (authenticate_user, create_access_token,
+                          get_current_user, hash_password)
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 

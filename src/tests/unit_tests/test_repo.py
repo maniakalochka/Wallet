@@ -1,6 +1,7 @@
-from repositories.user import UserRepo
 import pytest
+
 from models.user import User
+from repositories.user import UserRepo
 
 
 @pytest.mark.parametrize("id, exists", [(1, True), (2, True), (4, False)])

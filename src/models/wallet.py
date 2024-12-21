@@ -1,12 +1,11 @@
-from database.db import Base
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, Mapped, mapped_column
 import enum
-from models.transaction import Transaction
-
-
 from typing import TYPE_CHECKING
 
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from database.db import Base
+from models.transaction import Transaction
 
 if TYPE_CHECKING:
     from models.transaction import Transaction

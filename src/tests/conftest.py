@@ -1,11 +1,12 @@
 import pytest
-from models.base import Base
-from core.config import settings
-from database.db import engine, async_session
-from starlette.testclient import TestClient
-from main import app as fastapi_app
-from main import app
 from httpx import AsyncClient
+from starlette.testclient import TestClient
+
+from core.config import settings
+from database.db import async_session, engine
+from main import app
+from main import app as fastapi_app
+from models.base import Base
 
 
 @pytest.fixture(scope="session", autouse=True)
