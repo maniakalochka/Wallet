@@ -32,7 +32,6 @@ class WalletRepo(SQLAlchemyRepository):
             )
         return wallet.balance
 
-
     async def update_balance(
         self, wallet_id: int, new_balance: float, db: AsyncSession
     ):
@@ -47,4 +46,3 @@ class WalletRepo(SQLAlchemyRepository):
         wallet.balance = new_balance
         db.add(wallet)
         await db.commit()
-

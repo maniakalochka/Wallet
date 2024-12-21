@@ -62,6 +62,7 @@ async def add_transaction(
 @transaction_router.get("/all")
 @cache(expire=60)
 async def get_transactions(
+    user_id: int,
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
@@ -73,7 +74,6 @@ async def get_transactions(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
         )
-    user_id = current_user.id
     transactions = await TransactionRepo().find_all(user_id)
     return transactions
 
@@ -84,25 +84,25 @@ async def get_my_transactions(
     db: Annotated[AsyncSession, Depends(get_db)],
     current_user: Annotated[User, Depends(get_current_user)],
 ):
-    transactions = await TransactionRepo().find_by_id(current_user.id)
+    transactions = await TransactionRepo().find_all(current_user.id)
     return transactions
 
 
-@transaction_router.get("/{id}")
-@cache(expire=60)
-async def get_transaction_by_id(
-    id: int,
-    db: Annotated[AsyncSession, Depends(get_db)],
-    current_user: Annotated[User, Depends(get_current_user)],
-):
-    transaction = await TransactionRepo().find_by_id(id)
-    if transaction is None:
-        raise HTTPException(status_code=404, detail="Transaction not found")
-    if not current_user.is_admin and (
-        transaction.sender_wallet_id != current_user.wallet.id
-        and transaction.receiver_wallet_id != current_user.wallet.id
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
-        )
-    return transaction
+# @transaction_router.get("/{id}")
+# @cache(expire=60)
+# async def get_transaction_by_id(
+#     id: int,
+#     db: Annotated[AsyncSession, Depends(get_db)],
+#     current_user: Annotated[User, Depends(get_current_user)],
+# ):
+#     transaction = await TransactionRepo().find_by_id(id)
+#     if transaction is None:
+#         raise HTTPException(status_code=404, detail="Transaction not found")
+#     if not current_user.is_admin and (
+#         transaction.sender_wallet_id != current_user.wallet.id
+#         and transaction.receiver_wallet_id != current_user.wallet.id
+#     ):
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
+#         )
+#     return transaction

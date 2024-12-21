@@ -34,7 +34,6 @@ async def add_wallet(
 
 
 @wallet_router.get("/all")
-@cache(expire=60)
 async def get_wallets(
     current_user: Annotated[dict, Depends(get_current_user)],
 ):
