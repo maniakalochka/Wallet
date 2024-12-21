@@ -13,8 +13,13 @@ from models.transaction import Transaction
 from models.user import User
 from models.wallet import Wallet
 from repositories.user import UserRepo
-from routers.auth_helper import (authenticate_user, create_access_token,
-                                 get_current_user, verify_password)
+from routers.auth_helper import (
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    verify_password,
+)
+
 
 SECRET_TOKEN = settings.SECRET_TOKEN
 ALGORITHM = "HS256"
@@ -55,6 +60,31 @@ class WalletAdmin(ModelView, model=Wallet):
     column_sortable_list = ["id", "balance", "user"]
     column_searchable_list = ["user.username"]
     form_edit_rules = ["balance", "user"]
+
+
+class TransactionAdmin(ModelView, model=Transaction):
+    def date_format(value):
+        return value.strftime("%d.%m.%Y")
+
+    name = "Транзакция"
+    name_plural = "Транзакции"
+    category = "Транзакции"
+    column_list = [
+        "id",
+        "user_id",
+        "sender_wallet_id",
+        "receiver_wallet_id",
+        "amount",
+        "discription",
+        "type",
+        "created_date",
+    ]
+    column_sortable_list = ["id", "amount", "date"]
+    column_searchable_list = ["wallet.user.username"]
+    form_edit_rules = [
+        "amount",
+        "wallet",
+    ]
 
 
 class AdminAuth(AuthenticationBackend):
