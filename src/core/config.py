@@ -6,14 +6,14 @@ from pydantic import ConfigDict, model_validator
 from pydantic_settings import BaseSettings
 
 #  Load environment variables from .env file
-env_path = Path(__file__).resolve().parents[2] / ".env"
+env_path = Path(__file__).resolve().parents[2] / ".env-non-dev"
 load_dotenv(dotenv_path=env_path)
 
 
 class Settings(BaseSettings):
     # --- App Settings ---
     APP_NAME: str = "Wallet"
-    MODE: Literal["DEV", "TEST", "PROD"] = "TEST"
+    MODE: Literal["DEV", "TEST", "PROD"] = "DEV"
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
     # --- Database Settings ---
@@ -28,12 +28,18 @@ class Settings(BaseSettings):
     SECRET_TOKEN: str
 
     # --- Other Settings ---
-    TEST_DB_USER: str
-    TEST_DB_PASS: str
-    TEST_DB_HOST: str
-    TEST_DB_PORT: int
-    TEST_DB_NAME: str
-    TEST_DB_URL: Optional[str] = None
+    # TEST_DB_USER: str
+    # TEST_DB_PASS: str
+    # TEST_DB_HOST: str
+    # TEST_DB_PORT: int
+    # TEST_DB_NAME: str
+    # TEST_DB_URL: Optional[str] = None
+
+    RABBITMQ_DEFAULT_USER: str
+    RABBITMQ_DEFAULT_PASS: str
+
+    REDIS_HOST: str
+    REDIS_PORT: int
 
     @model_validator(mode="before")
     @classmethod
@@ -45,11 +51,11 @@ class Settings(BaseSettings):
                 f"@{values['DB_HOST']}:{values['DB_PORT']}/{values['DB_NAME']}"
             )
 
-        if not values.get("TEST_DB_URL"):
-            values["TEST_DB_URL"] = (
-                f"postgresql+asyncpg://{values['TEST_DB_USER']}:{values['TEST_DB_PASS']}"
-                f"@{values['TEST_DB_HOST']}:{values['TEST_DB_PORT']}/{values['TEST_DB_NAME']}"
-            )
+        # if not values.get("TEST_DB_URL"):
+        #     values["TEST_DB_URL"] = (
+        #         f"postgresql+asyncpg://{values['TEST_DB_USER']}:{values['TEST_DB_PASS']}"
+        #         f"@{values['TEST_DB_HOST']}:{values['TEST_DB_PORT']}/{values['TEST_DB_NAME']}"
+        #     )
 
         return values
 
