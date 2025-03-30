@@ -17,7 +17,6 @@ from .auth_helper import (authenticate_user, create_access_token,
                           get_current_user, hash_password)
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
-
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 

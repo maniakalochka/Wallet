@@ -1,31 +1,31 @@
-version: '3.7'
+version: "3.7"
 services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: walletdb
-    container_name: walletdb
-    env_file:
-      - .env-non-dev
-    ports:
-      - 5432:5432
+    db:
+        image: postgres:15
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_DB: walletdb
+        container_name: walletdb
+        env_file:
+            - .env
+        ports:
+            - 5432:5432
 
-  redis:
-    image: redis:7
-    container_name: walletredis
+    redis:
+        image: redis:7
+        container_name: walletredis
 
-  wallet:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: wallet_app
-    env_file:
-      - .env-non-dev
-    depends_on:
-      - db
-      - redis
-    command: [ "/wallet/app.sh" ]
-    ports:
-      - 9000:8000
+    wallet:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: wallet_app
+        env_file:
+            - .env
+        depends_on:
+            - db
+            - redis
+        command: ["/wallet/app.sh"]
+        ports:
+            - 9000:8000

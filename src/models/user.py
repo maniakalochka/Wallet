@@ -25,4 +25,7 @@ class User(Base):
     )
 
     def __str__(self) -> str:
+        return f"User {self.last_name}"
+
+    def __repr__(self):
         return f"<User {self.last_name}>"

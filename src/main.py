@@ -70,5 +70,4 @@ async def add_log(request: Request, call_next):
 if __name__ == "__main__":
     import uvicorn
 
-    init_db()
     uvicorn.run(app=app, host="localhost", port=8000, reload=True)
